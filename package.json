@@ -1,14 +1,13 @@
 {
-	"name": "app-name",
-	"productName": "App Name",
+	"name": "covid-19-frontend",
+	"productName": "COVID-19 Detection",
 	"version": "0.0.0",
 	"description": "The best app ever",
 	"license": "MIT",
-	"repository": "sindresorhus/electron-boilerplate",
 	"author": {
-		"name": "Your Name",
-		"email": "user@gmail.com",
-		"url": "https://sindresorhus.com"
+		"name": "Shubham Patel",
+		"email": "shubham.dhaboya@gmail.com",
+		"url": "https://ssqcs.com"
 	},
 	"scripts": {
 		"postinstall": "electron-builder install-app-deps",

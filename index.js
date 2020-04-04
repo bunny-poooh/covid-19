@@ -1,17 +1,12 @@
 'use strict';
 const path = require('path');
-const {app, BrowserWindow, Menu} = require('electron');
+const {app, BrowserWindow, ipcMain} = require('electron');
 /// const {autoUpdater} = require('electron-updater');
 const {is} = require('electron-util');
 const unhandled = require('electron-unhandled');
-const debug = require('electron-debug');
-const contextMenu = require('electron-context-menu');
-const config = require('./config');
-const menu = require('./menu');
-
+// use to run sheel command
+const spawn = require("child_process").spawn; 
 unhandled();
-debug();
-contextMenu();
 
 // Note: Must match `build.appId` in package.json
 app.setAppUserModelId('com.company.AppName');
@@ -33,9 +28,11 @@ let mainWindow;
 const createMainWindow = async () => {
 	const win = new BrowserWindow({
 		title: app.name,
+		width: 1000,
 		show: false,
-		width: 600,
-		height: 400
+		webPreferences: {
+			nodeIntegration: true
+		}
 	});
 
 	win.on('ready-to-show', () => {
@@ -82,9 +79,12 @@ app.on('activate', async () => {
 
 (async () => {
 	await app.whenReady();
-	Menu.setApplicationMenu(menu);
 	mainWindow = await createMainWindow();
-
-	const favoriteAnimal = config.get('favoriteAnimal');
-	mainWindow.webContents.executeJavaScript(`document.querySelector('header p').textContent = 'Your favorite animal is ${favoriteAnimal}'`);
 })();
+
+ipcMain.on('startDetection', (event, data) => {
+	var process = spawn('python',["./test.py", data] );
+	process.stdout.on('data', function(data) { 
+		mainWindow.webContents.send('resultSent', data.toString());
+    });
+});

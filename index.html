@@ -1,18 +1,81 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Electron boilerplate</title>
+		<title>Covid-19 Detection</title>
 		<link rel="stylesheet" href="index.css">
 	</head>
 	<body>
 		<div class="container">
-			<header>
-				<h1>Electron boilerplate</h1>
-				<p></p>
-			</header>
-			<section class="main"></section>
-			<footer></footer>
+			<div class="row">
+				<div class="col">
+					<label for="file" class="selectImageLbl" id="selectImageLbl">
+						<span>Click Here</span>
+					</label>
+					<input type="file" name="file" id="file" style="display: none;" accept=".jpg,.jpeg,.png" onchange="readURL(this)">
+					<img src="" id="preview" style="display: none">
+				</div>
+				<div class="col-sm">
+					<img class="goImg" id="goImg" src="./static/icons.png" onclick="startDetection()">
+				</div>
+				<div class="col imgBorder" id="resultCol">
+					<img src="" id="result">
+				</div>
+				<a href="javascript:void" class="reloadBtn" onclick="window.location.reload()">Clear result</a>
+			</div>
 		</div>
 	</body>
+	<script>
+		const electron = require('electron');
+		const ipc = electron.ipcRenderer;
+
+		var preview = document.getElementById('preview');
+		var selectImageLbl = document.getElementById('selectImageLbl');
+		var input = document.getElementById('file');
+		var goImg = document.getElementById('goImg');
+		var resultImg = document.getElementById('result');
+		var resultCol = document.getElementById('resultCol');
+		var reloadBtn = document.getElementById('reloadBtn');
+
+		/**
+		 * Function to read data url and display
+		 */
+		function readURL(input) {
+			if (input.files && input.files[0]) {
+				var reader = new FileReader();
+		    
+				reader.onload = function(e) {
+		     		preview.setAttribute('src', e.target.result);
+		    	}
+		    
+		    	reader.readAsDataURL(input.files[0]); // convert to base64 string
+		    	preview.style.display = 'block';
+		    	selectImageLbl.style.display = 'none';
+			}else{
+		    	preview.style.display = 'none';
+		    	selectImageLbl.style.display = 'block';
+			}
+		}
+
+		/**
+		 * Function to start detection
+		 */
+		function startDetection() {
+			if (input.files.length) {
+				goImg.src = './static/pleaseWait.png';
+				goImg.classList.add('spin');
+				ipc.send('startDetection', input.files[0].path);
+			}else{
+				alert('Select image first');
+			}
+			return false;
+		}
+		ipc.on('resultSent', function (evt, result) {
+		    reloadBtn.style.display = 'block';
+			goImg.src = './static/done.png';
+			goImg.classList.remove('spin');
+			resultCol.classList.remove('imgBorder');
+			resultImg.src = result;
+		});
+	</script>
 </html>
