@@ -93,7 +93,6 @@ body {
 	width: 100%;
 }
 #reloadBtn {
-	display: none;
 	position: relative;
     top: 10px;
 }
