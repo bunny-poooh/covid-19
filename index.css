@@ -92,7 +92,7 @@ body {
 #preview, #result{
 	width: 100%;
 }
-.reloadBtn {
+#reloadBtn {
 	display: none;
 	position: relative;
     top: 10px;

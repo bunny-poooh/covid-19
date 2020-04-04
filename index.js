@@ -5,7 +5,10 @@ const {app, BrowserWindow, ipcMain} = require('electron');
 const {is} = require('electron-util');
 const unhandled = require('electron-unhandled');
 // use to run sheel command
-const spawn = require("child_process").spawn; 
+const spawn = require("child_process").spawn;
+
+const pyEntryPoint = './test.py';
+
 unhandled();
 
 // Note: Must match `build.appId` in package.json
@@ -83,8 +86,9 @@ app.on('activate', async () => {
 })();
 
 ipcMain.on('startDetection', (event, data) => {
-	var process = spawn('python',["./test.py", data] );
+	var process = spawn('python',[pyEntryPoint, data] );
 	process.stdout.on('data', function(data) { 
+	console.log(data.toString());
 		mainWindow.webContents.send('resultSent', data.toString());
     });
 });
